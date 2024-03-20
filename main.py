@@ -3,7 +3,10 @@ import boto3
 import time
 import pandas as pd
 
-
+# Configura las credenciales de AWS
+aws_access_key_id = 'TU_ACCESS_KEY_ID'
+aws_secret_access_key = 'TU_SECRET_ACCESS_KEY'
+region_name = 'us-east-1'
 
 # Crea una instancia de FastAPI
 app = FastAPI(title="Reporte Empleados API", description="Esta API proporciona un servicio para ejecutar consultas en AWS Athena sobre una base de datos de empleados. A continuación se muestran algunos ejemplos de consultas posibles:",

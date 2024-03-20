@@ -269,4 +269,5 @@ Ingresamos a la consola de GCP y buscamos Cloud Run. Y seguimos los siguiente pa
 ]
 ```
 Documentacion mas detallada: https://axiomatic-ticket-4ff.notion.site/PRUEBA-T-CNICA-INGENIERIA-DE-DATOS-ClOUD-LABS-c0c66396f7764631bb307487a12a13d5?pvs=4
+
 Muchas gracias por la oportunidad, un abrazo.

@@ -161,3 +161,112 @@ select * from empleados_db
 ![image](https://github.com/1treu1/API-Empleados/assets/71142778/0e2e1152-029c-4e23-bdd3-983114efd8a7)
 ![image](https://github.com/1treu1/API-Empleados/assets/71142778/e9f09de5-757c-4b8b-9d7d-571111f59f1f)
 
+## Desafio #5 y #6
+
+Para estos dos puntos vamos a crear una API con **GCP Cloud Run**, que se conecte a **AWS Athena** y haga las consultas a `empleados_db` . Pero primero vamos a crear las credenciales en **AWS Athena** para poder acceder externamente:
+
+- Buscar en la consola de AWS IAM/Usuarios y seguir los pasos:
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/34e7cc75-083a-49c4-9650-79e8776eb370)
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/7e528a97-b17c-4414-91b0-e3593870513f)
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/69ea3254-e7a6-4fe8-941a-3f622d47f558)
+- Seleccionamos las siguientes politicas:
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/e78e745e-3150-412d-9099-c8476fd3f098)
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/45136f6b-97bc-4861-833a-3fde4830a70b)
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/3e29d193-bfbc-4bb3-b8e0-c4bccad9986b)
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/cee128b6-c193-48f4-ac95-f87dc90a6a4b)
+- Creando clave de acceso:
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/b1ee78ce-5fe3-408d-ac4f-1dc5f1414fe6)
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/608ac144-02ac-4722-b8af-3b81b57ec1b1)
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/c614ded7-b1a0-4985-bc84-f54fb139f01f)
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/7a37b1ec-62d9-4b84-a22f-423b16d1672e)
+- Ahora tenemos que darle permisos de Lake Formation al nuevo usuario `Luis-DS-API-User` para que pueda hacer consultas en Athena.
+    
+    Vamos a [AWS Lake Formation](https://us-east-1.console.aws.amazon.com/lakeformation/home?region=us-east-1#firstRun)/Data lake permissions, y seguimos los pasos:
+    ![image](https://github.com/1treu1/API-Empleados/assets/71142778/efadf64a-215a-4228-966b-839425db87c7)
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/95e477a8-e084-4159-8ee5-e44aab7078fa)
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/9639e4ed-30ac-4bcc-bde2-f01882773182)
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/79f2b0b1-3c2f-4bfd-be33-37c01c8d80e4)
+- Haremos nuevamente los mismos pero incluyendo las tablas:
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/abc8a41c-5c79-4edb-8b38-0b15423752c2)
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/8636678b-5ce7-470d-b8a0-9dc4a64c2351)
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/474afba4-4c86-40f2-b33c-ed25b8775499)
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/a9286e8a-2695-436e-b3b4-52e4096fe976)
+
+**Ejecutando Localmente la API:**
+
+```bash
+git clone https://github.com/1treu1/API-Empleados.git
+cd API-Empleados
+python3 -m venv API
+source API/bin/activate
+pip install -r requirement.txt
+```
+
+- Agregar credenciales en main.py en las lineas 7 y 8
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/f33b22bd-486f-4fec-8a79-5f1a702ead98)
+
+```json
+gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app
+```
+
+- Ingresamos a esta URL:
+
+http://127.0.0.1:8000/docs#/default/ejecutar_consulta_consulta__post
+
+- Seguimos los siguientes pasos:
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/8c074260-1e23-4f89-9600-724c33abb725)
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/bee6b3bf-fecc-4be4-9955-602a9062d546)
+- Respuesta de la API:
+
+```json
+[
+  {
+    "nombre": "Juanita Escalona Parejo",
+    "departamento": "Caquetá",
+    "puesto_de_trabajo": "Gerente",
+    "salario": "8220576",
+    "email": "chaparroamaro@example.com",
+    "teléfono": "+34 886 42 96 81",
+    "dirección": "Urbanización Macario Álvarez 88 Puerta 6 \nSanta Cruz de Tenerife, 13159",
+    "__index_level_0__": "0"
+  }
+]
+```
+
+**Ejecutando contenedor en GCP Cloud Run:**
+
+Ingresamos a la consola de GCP y buscamos Cloud Run. Y seguimos los siguiente pasos:
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/1417a43c-800a-41ba-8614-6b4c0fa6ba3a)
+```bash
+# URL del Contenedor
+11treu11/api-empleados:v1
+```
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/d2b20c30-7252-472b-a3d0-2a8b1cae19ca)
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/f00ed91d-e30a-4a94-a27a-8c2c46f8a4fb)
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/1b3374e9-8a8b-49a5-a9dd-ebac4c52c61d)
+
+
+- API desplegada (Si quieres probar la API ingresa al siguiente link y sigue los pasos):
+
+[Reporte Empleados API - Swagger UI](https://api-empleados-a7ngfzyxxq-uc.a.run.app/docs#/default/ejecutar_consulta_consulta__post)
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/bc2414fc-19a2-45ad-8cdb-891ef6937062)
+![image](https://github.com/1treu1/API-Empleados/assets/71142778/28b0397d-efe2-4734-8227-56601c2641e6)
+
+**Respuesta de la API:**
+
+```json
+[
+  {
+    "nombre": "Juanita Escalona Parejo",
+    "departamento": "Caquetá",
+    "puesto_de_trabajo": "Gerente",
+    "salario": "8220576",
+    "email": "chaparroamaro@example.com",
+    "teléfono": "+34 886 42 96 81",
+    "dirección": "Urbanización Macario Álvarez 88 Puerta 6 \nSanta Cruz de Tenerife, 13159",
+    "__index_level_0__": "0"
+  }
+]
+```
+Documentacion mas detallada: https://axiomatic-ticket-4ff.notion.site/PRUEBA-T-CNICA-INGENIERIA-DE-DATOS-ClOUD-LABS-c0c66396f7764631bb307487a12a13d5?pvs=4
+Muchas gracias por la oportunidad, un abrazo.
